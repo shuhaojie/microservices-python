@@ -15,6 +15,7 @@ mongo_mp3 = PyMongo(server, uri="mongodb://host.minikube.internal:27017/mp3s")
 fs_videos = gridfs.GridFS(mongo_video.db)
 fs_mp3s = gridfs.GridFS(mongo_mp3.db)
 
+# 使用的是rabbitmq的k8s服务 
 connection = pika.BlockingConnection(pika.ConnectionParameters("rabbitmq"))
 channel = connection.channel()
 

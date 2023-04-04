@@ -1,30 +1,30 @@
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: auth
+apiVersion: apps/v1  # 版本号, 需要根据安装的Kubernetes版本和资源类型进行变化
+kind: Deployment  # 想要创建的对象的类别。常见的有: Pod, ConfigMap, Service, Secret等
+metadata:  # 包含Deployment的一些meta信息
+  name: auth  # Deployment的名称
   labels:
-    app: auth
-spec:
-  replicas: 2
-  selector:
+    app: auth  # 标签
+spec:  # 用来指定我们想要的配置
+  replicas: 2  # 副本数量, 多少个pod
+  selector:  # 选择器，和pod做关联
     matchLabels:
       app: auth
   strategy:
     type: RollingUpdate
     rollingUpdate:
       maxSurge: 3
-  template:
+  template:  # 控制的pod信息
     metadata:
       labels:
         app: auth
     spec:
       containers:
-        - name: auth
-          image: sweasytech/auth
+        - name: auth  # 容器名称
+          image: shuhaojie/auth  # 容器需要的镜像地址
           ports:
-            - containerPort: 5000
+            - containerPort: 5000  # 要监听的端口
           envFrom:
             - configMapRef:
-                name: auth-configmap
+                name: auth-configmap  # 从文件读配置信息
             - secretRef:
-                name: auth-secret
+                name: auth-secret  # 从文件读配置信息

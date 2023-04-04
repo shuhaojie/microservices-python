@@ -45,6 +45,7 @@ def validate():
     if not encoded_jwt:
         return "missing credentials", 401
 
+    # 因为前面有Bearer字符
     encoded_jwt = encoded_jwt.split(" ")[1]
 
     try:
