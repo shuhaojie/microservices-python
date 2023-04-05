@@ -1,5 +1,5 @@
 apiVersion: networking.k8s.io/v1
-kind: Ingress
+kind: Ingress  # Ingress的作用是做一个负载均衡
 metadata:
   name: gateway-ingress
   annotations:

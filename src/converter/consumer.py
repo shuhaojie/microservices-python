@@ -18,12 +18,15 @@ def main():
 
     def callback(ch, method, properties, body):
         err = to_mp3.start(body, fs_videos, fs_mp3s, ch)
+        # 如果有报错, 发的nack
         if err:
             ch.basic_nack(delivery_tag=method.delivery_tag)
+        # 如果没有报错, 发的是ack
         else:
             ch.basic_ack(delivery_tag=method.delivery_tag)
 
     channel.basic_consume(
+        # on_message_callback这个是consumer从消息队列中获取到消息的时候，执行的回调
         queue=os.environ.get("VIDEO_QUEUE"), on_message_callback=callback
     )
 

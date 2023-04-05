@@ -27,6 +27,26 @@
 - k9s: 提供k8s的终端UI去进行交互
 - python3.10
 - mysql
+- mongodb: <https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-os-x/>
+```bash
+brew tap mongodb/brew
+brew update
+brew install mongodb-community@6.0
+# 启动MongoDB
+mongod --config /usr/local/etc/mongod.conf --fork
+# 进入MongoDB的终端
+mongosh
+```
+
+查看MongoDB的数据
+
+```bash
+show databases;
+use mp3s;
+show collections;
+# 查看文件obj
+db.fs.files.find()
+```
 
 ### 2. k8s配置
 
@@ -62,6 +82,36 @@ docker tag 32a1a37fc54d30269daad42484ec21c277824fc6063710439eec9b5428107a3c shuh
 docker push shuhaojie/gateway:latest
 ```
 
-
 ## 三、消息队列
 
+在视频上传代码中，会将消息发送给队列，消息队列的流程如下
+
+<div align=center><img alt="#" width="1472" height="828" src=pic/消息队列.png></div>
+
+生产者并没有直接将消息发送给队列，而是通过交换机(Exchange)来作为队列和它之间的桥梁。交换机和队列之间通过routing_key来定义路由关系的，当交换机
+设置为默认的空字符串时，创建的每个队列，都使用与队列名称相同的routing_key，来自动绑定到它。
+> 见官网说明<https://www.rabbitmq.com/tutorials/amqp-concepts.html#exchange-default>
+
+因此可以指定exchange为空字符串，routing_key的名称为想将消息定向到的队列的名称。此外，指定`delivery_mode`为`PERSISTENT_DELIVERY_MODE`，
+来保证消息的持久化。
+
+```python
+channel.basic_publish(
+    exchange="",
+    routing_key="video",
+    body=json.dumps(message),
+    properties=pika.BasicProperties(
+        delivery_mode=pika.spec.PERSISTENT_DELIVERY_MODE
+    ),
+)
+```
+在消费的时候，指定queue
+```python
+channel.basic_consume(
+    queue="video", on_message_callback=callback
+)
+```
+
+另外在rabbitmq中需要手动去创建队列
+
+<div align=center><img alt="#" width="900" height="543" src=pic/rabbitmq创建队列.png></div>

@@ -13,7 +13,7 @@ spec:  # 用来指定我们想要的配置
     type: RollingUpdate
     rollingUpdate:
       maxSurge: 3
-  template:  # 控制的pod信息
+  template:  # template模板来创建Pod资源
     metadata:
       labels:
         app: auth
