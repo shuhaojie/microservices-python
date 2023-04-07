@@ -1,5 +1,7 @@
 import smtplib, os, json
 from email.message import EmailMessage
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 
 def notification(message):
@@ -10,19 +12,15 @@ def notification(message):
     sender_password = os.environ.get("GMAIL_PASSWORD")
     receiver_address = message["username"]
 
-    msg = EmailMessage()
-    msg.set_content(f"mp3 file_id: {mp3_fid} is now ready!")
-    msg["Subject"] = "MP3 Download"
-    msg["From"] = sender_address
-    msg["To"] = receiver_address
+    msg = MIMEMultipart('alternative')
+    msg['Subject'] = '测试'
+    msg['From'] = sender_address
+    msg['To'] = receiver_address
+    msg.attach(MIMEText(mp3_fid))
 
-    session = smtplib.SMTP("smtp.gmail.com", 587)
-    session.starttls()
-    session.login(sender_address, sender_password)
-    session.send_message(msg, sender_address, receiver_address)
-    session.quit()
+    s = smtplib.SMTP_SSL('imap.qq.com')
+    s.login(sender_address, sender_password)
     print("Mail Sent")
-
 
 # except Exception as err:
 # print(err)

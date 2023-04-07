@@ -6,8 +6,8 @@
 
 <div align=center><img alt="#" width="843" height="485" src=pic/系统流程.png></div>
 
-- 用户登录，在请求头中携带`Authorization: Basic <credentials>`，里面包含加密的用户名和密码
-- [网关]调用[认证微服务]，对密文解密，判断用户用户名/密码是否匹配，如果匹配返回json web token给用户
+- 用户登录
+- [网关]调用[认证微服务]，判断用户用户名/密码是否匹配，如果匹配返回json web token给用户
 - 用户携带jwt，发送上传视频请求
 - [网关]调用[认证微服务]，通过解密jwt判断token是否有效
 - [网关]存储视频(MongoDB)，并给[消息队列]发消息
@@ -115,3 +115,15 @@ channel.basic_consume(
 另外在rabbitmq中需要手动去创建队列
 
 <div align=center><img alt="#" width="900" height="543" src=pic/rabbitmq创建队列.png></div>
+
+四、Todo
+
+1. 了解k8s
+2. 了解MongoDB
+3. 每次上传数据的是，需要重启gateway，需要解决
+```bash
+kubectl delete -f ./manifests
+kubectl apply -f ./manifests
+```
+4. 上传完视频后，并没有收到邮件，排查原因
+5. notification等pods中里面没有看到`print`和`logging`的日志，排查原因

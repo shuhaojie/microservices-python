@@ -1,13 +1,18 @@
 import pika, sys, os, time
 from send import email
+from log import api_log
 
 
 def main():
     # rabbitmq connection
+    api_log.info("Notification listening start.")
+    print("Notification listening start.")
     connection = pika.BlockingConnection(pika.ConnectionParameters(host="rabbitmq"))
     channel = connection.channel()
 
     def callback(ch, method, properties, body):
+        api_log.info("Notification get message from mp3 queue.")
+        print("Notification get message from mp3 queue.")
         err = email.notification(body)
         if err:
             ch.basic_nack(delivery_tag=method.delivery_tag)
