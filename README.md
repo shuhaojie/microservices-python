@@ -2,13 +2,13 @@
 
 ## 一、系统流程
 
-系统流程图如下
+本项目实现视频的声音提取功能，整个系统流程图如下
 
 <div align=center><img alt="#" width="843" height="485" src=pic/系统流程.png></div>
 
 整个流程如下：
-1. 用户登录，获取token
-2. 用户发送上传视频请求给【API Gateway】
+1.  用户登录，获取token
+2.  用户发送上传视频请求给【API Gateway】
 3. 【API Gateway】调用【auth service】，判断token是否有效
 4. 【API Gateway】将视频存入【MongoDB】，并给【queue】发消息
 5. 【video to mp3 service】从【queue】中消费任务，将其转为mp3，并将mp3存到MongoDB中
@@ -18,15 +18,44 @@
 
 ## 二、环境安装
 
-### 1. 软件安装
+### 1. docker
 
-- docker: mac直接下载dmg文件即可
-- kubectl: k8s的命令行工具。<https://kubernetes.io/zh-cn/docs/tasks/tools/install-kubectl-macos/>
-- minikube: 本地化的kubernetes，用于学习和开发k8s。<https://minikube.sigs.k8s.io/docs/start/>
-- k9s: 提供k8s的终端UI去进行交互
-- python3.10
-- mysql
-- mongodb: <https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-os-x/>
+mac直接下载dmg文件即可
+
+### 2. kubectl
+k8s的命令行工具，参考<https://kubernetes.io/zh-cn/docs/tasks/tools/install-kubectl-macos/>
+
+### 3. minikube
+
+本地化的kubernetes集群工具，用于学习和开发k8s，参考<https://minikube.sigs.k8s.io/docs/start/>
+
+### 4. k9s
+
+提供k8s的终端UI去进行交互，参考<https://github.com/derailed/k9s>
+
+页面展示如下，其中输入0查看的是所有namespace的，输入1查看的是default的namespace
+<div align=center><img alt="#" width="1863" height="750" src=pic/k9s.png></div>
+
+### 5. python3.10
+
+参考<https://www.python.org/downloads/release/python-3100/>
+
+### 6. mysql
+
+参考<https://formulae.brew.sh/formula/mysql> <https://juejin.cn/post/7020737412955373598>
+
+```bash
+brew install mysql
+brew link mysql # 软链
+mysql --version # 查看是否安装成功
+sudo mysql.server start  # 启动MySQL服务
+mysqladmin -u root password # 配置root用户
+```
+
+### 7.mongodb
+
+参考<https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-os-x/>
+
 ```bash
 brew tap mongodb/brew
 brew update
@@ -81,6 +110,57 @@ docker tag 32a1a37fc54d30269daad42484ec21c277824fc6063710439eec9b5428107a3c shuh
 docker push shuhaojie/gateway:latest
 ```
 
+## 三、服务模块
+
+### 1. auth模块
+
+该服务模块用来提供认证服务以及实现登录
+
+#### (1) 创建用户
+
+```bash
+mysql -u root -p < init.sql
+```
+
+#### (2) 构建镜像
+
+```bash
+docker build . 
+```
+
+这个命令构建好镜像之后，会生产一个sha256，只需要对其重命名即可
+```bash
+docker tag {sha256} shuhaojie/auth:latest
+```
+如果打镜像遇到问题，也可以用作者已经构建好的镜像
+
+```bash
+docker push sweasytech/auth:latest
+docker tag sweasytech/auth:latest shuhaojie/auth:latest # 重命名
+```
+
+#### (3) 服务创建
+
+这里使用default这个namespace，方便k9s中进行可视化. 
+> k8s系统的pod是kub-system, 不是default
+
+这里一共四个yaml文件
+
+- auth-deploy.yaml: 创建deployment
+- configmap.yaml: auth-deploy.yaml中需要使用到的配置文件
+- secret.yaml: auth-deploy.yaml中需要使用到的配置文件, 不对外展示的
+- service.yaml: 创建服务
+
+创建deploy, svc
+```bash
+cd src/auth
+kubectl create -f manifests/
+```
+
+
+
+### 2.
+
 ## 三、消息队列
 
 在视频上传代码中，会将消息发送给队列，消息队列的流程如下
@@ -119,7 +199,7 @@ channel.basic_consume(
 
 1. 了解k8s
 2. 了解MongoDB
-3. 每次上传数据的是，需要重启gateway，需要解决
+3. 每次上传数据时，需要重启gateway，需要解决
 ```bash
 kubectl delete -f ./manifests
 kubectl apply -f ./manifests
