@@ -6,16 +6,15 @@
 
 <div align=center><img alt="#" width="843" height="485" src=pic/系统流程.png></div>
 
-- 用户登录
-- [网关]调用[认证微服务]，判断用户用户名/密码是否匹配，如果匹配返回json web token给用户
-- 用户携带jwt，发送上传视频请求
-- [网关]调用[认证微服务]，通过解密jwt判断token是否有效
-- [网关]存储视频(MongoDB)，并给[消息队列]发消息
-- [视频转mp3服务]从[消息队列]中消费任务，从消息队列中拿到视频的id。从MongoDB中拿到视频，并将其转为mp3，并将mp3存到MongoDB中
-- [视频转mp3服务]给[消息队列]发消息，告诉它转换已经完成
-- [消息通知服务]从[消息队列]中消费任务，然后给用户发送email，邮件里告诉用户mp3的id
-- 浏览器通过mp3的id，以及用户的token，发送一个下载请求
-- [网关]处理下载请求，并从MongoDB中取出mp3，将mp3返给用户
+整个流程如下：
+1. 用户登录，获取token
+2. 用户发送上传视频请求给【API Gateway】
+3.【API Gateway】调用【auth service】，判断token是否有效
+4.【API Gateway】将视频存入【MongoDB】，并给【queue】发消息
+5.【video to mp3 service】从【queue】中消费任务，将其转为mp3，并将mp3存到MongoDB中 
+6.【video to mp3 service】 给【queue】发消息，告诉它转换已经完成
+7.【notification service】从【queue】中消费任务，然后给用户发送email，邮件里告诉用户mp3的id
+8.【API Gateway】处理下载请求，并从MongoDB中取出mp3，将mp3返给用户
 
 ## 二、环境安装
 
