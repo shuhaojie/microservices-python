@@ -4,7 +4,7 @@
 
 本项目实现视频的声音提取功能，整个系统流程图如下
 
-<div align=center><img alt="#" width="843" height="485" src=pic/系统流程.png></div>
+<div align=center><img alt="#" width="843" height="485" src=图片/系统流程.png></div>
 
 整个流程如下：
 1.  用户登录，获取token
@@ -34,7 +34,7 @@ k8s的命令行工具，参考<https://kubernetes.io/zh-cn/docs/tasks/tools/inst
 提供k8s的终端UI去进行交互，参考<https://github.com/derailed/k9s>
 
 页面展示如下，其中输入0查看的是所有namespace的，输入1查看的是default的namespace
-<div align=center><img alt="#" width="1863" height="750" src=pic/k9s.png></div>
+<div align=center><img alt="#" width="1863" height="750" src=图片/k9s.png></div>
 
 ### 5. python3.10
 
@@ -74,40 +74,6 @@ use mp3s;
 show collections;
 # 查看文件obj
 db.fs.files.find()
-```
-
-### 2. k8s配置
-
-```bash
-minikube start
-k9s  
-```
-
-### 3. auth镜像构建 
-
-```bash
-cd ~/workspaces/codes/microservices-python/src/auth
-docker build .
-docker tag fe8e28f2be27f0de7b9749822ef30395c26c42a2f94b267e28e81d8e29738388 shuhaojie/auth:latest
-docker push shuhaojie/auth:latest
-```
-
-### 4. auth Deployment构建
-
-```bash
-cd ~/workspaces/codes/microservices-python/src/auth/manifests/
-kubectl apply -f ./ 
-```
-此时可以看到创建好了两个pod
-<div align=center><img alt="#" width="1626" height="748" src=pic/pod.png></div>
-
-### 5. gateway镜像构建
-
-```bash
-cd ~/workspaces/codes/microservices-python/src/gateway
-docker build .
-docker tag 32a1a37fc54d30269daad42484ec21c277824fc6063710439eec9b5428107a3c shuhaojie/gateway:latest
-docker push shuhaojie/gateway:latest
 ```
 
 ## 三、服务模块
@@ -156,16 +122,16 @@ docker tag sweasytech/auth:latest shuhaojie/auth:latest # 重命名
 cd src/auth
 kubectl create -f manifests/
 ```
+此时可以看到auth服务这个pod
+<div align=center><img alt="#" width="2852" height="592" src=图片/auth服务.png></div>
 
-
-
-### 2.
+### 2. API gateway
 
 ## 三、消息队列
 
 在视频上传代码中，会将消息发送给队列，消息队列的流程如下
 
-<div align=center><img alt="#" width="1472" height="828" src=pic/消息队列.png></div>
+<div align=center><img alt="#" width="1472" height="828" src=图片/消息队列.png></div>
 
 生产者并没有直接将消息发送给队列，而是通过交换机(Exchange)来作为队列和它之间的桥梁。交换机和队列之间通过routing_key来定义路由关系的，当交换机
 设置为默认的空字符串时，创建的每个队列，都使用与队列名称相同的routing_key，来自动绑定到它。
@@ -193,7 +159,7 @@ channel.basic_consume(
 
 另外在rabbitmq中需要手动去创建队列
 
-<div align=center><img alt="#" width="900" height="543" src=pic/rabbitmq创建队列.png></div>
+<div align=center><img alt="#" width="900" height="543" src=图片/rabbitmq创建队列.png></div>
 
 四、Todo
 
