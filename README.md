@@ -2,6 +2,8 @@
 
 ## 一、系统流程
 
+参考视频<https://www.youtube.com/watch?v=hmkF77F9TLw&list=LL&index=3>，在作者的基础上有所修改
+
 本项目实现视频的声音提取功能，整个系统流程图如下
 
 <div align=center><img alt="#" width="843" height="485" src=图片/系统流程.png></div>
@@ -126,6 +128,22 @@ kubectl create -f manifests/
 <div align=center><img alt="#" width="2852" height="592" src=图片/auth服务.png></div>
 
 ### 2. API gateway
+
+这个模块是主服务，用户上传文件，然后转为mp3，这里用templates写了一个非常简易的前端页面。因此需要重新打镜像，这里打镜像注意亮点：
+
+1. 使用国内源，不然速度很慢
+
+```bash
+# apt使用国内源
+RUN sed -i 's#http://deb.debian.org#https://mirrors.163.com#g' /etc/apt/sources.list
+RUN  apt-get clean
+# pip使用国内源
+RUN pip install --no-cache-dir --requirement /app/requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+```
+
+2. 打镜像的时候，可能会遇到一个问题，新打的镜像并没有我的代码，原因参考<https://stackoverflow.com/questions/56392041/getting-errimageneverpull-in-pods>
+- `eval $(minikube docker-env)`
+- 重新打镜像
 
 ## 三、消息队列
 

@@ -15,6 +15,7 @@ spec:
       containers:
         - name: rabbitmq
           image: rabbitmq:3-management
+          imagePullPolicy: Never
           ports:
             - name: http
               protocol: TCP

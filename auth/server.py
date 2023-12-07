@@ -16,25 +16,25 @@ server.config["MYSQL_PORT"] = int(os.environ.get("MYSQL_PORT"))
 
 @server.route("/login", methods=["POST"])
 def login():
-    auth = request.authorization
-    if not auth:
-        return "missing credentials", 401
-
-    # check db for username and password
+    input_username = request.form.get("username")
+    input_password = request.form.get("password")
+    server.logger.info(input_username)
+    server.logger.info(input_password)
+    server.logger.info('==========================')
     cur = mysql.connection.cursor()
     res = cur.execute(
-        "SELECT email, password FROM user WHERE email=%s", (auth.username,)
+        "SELECT email, password FROM user WHERE email=%s", (input_username,)
     )
 
     if res > 0:
         user_row = cur.fetchone()
         email = user_row[0]
         password = user_row[1]
-
-        if auth.username != email or auth.password != password:
+        # server.logger.info(email, password, input_password, input_username)
+        if input_username != email or input_password != password:
             return "invalid credentials", 401
         else:
-            return createJWT(auth.username, os.environ.get("JWT_SECRET"), True)
+            return createJWT(input_username, os.environ.get("JWT_SECRET"), True)
     else:
         return "invalide credentials", 401
 
@@ -64,7 +64,7 @@ def createJWT(username, secret, authz):
         {
             "username": username,
             "exp": datetime.datetime.now(tz=datetime.timezone.utc)
-            + datetime.timedelta(days=1),
+                   + datetime.timedelta(days=1),
             "iat": datetime.datetime.utcnow(),
             "admin": authz,
         },

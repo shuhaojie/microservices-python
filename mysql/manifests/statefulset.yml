@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql
+spec:
+  serviceName: "not-applicable"
+  selector:
+    matchLabels:
+      app: mysql
+  template:  # template模板来创建Pod资源
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:latest
+          imagePullPolicy: Never
+          ports:
+            - name: http
+              protocol: TCP
+              containerPort: 3306
+          envFrom:
+            - configMapRef:
+                name: mysql-configmap
+            - secretRef:
+                name: mysql-secret
+          volumeMounts:
+            - name: mysql-data
+              mountPath: "/init"
+              subPath: "init"
+      volumes:
+        - name: mysql-data
+          hostPath:
+            path: /Users/haojie/workspaces/codes/microservices-python
+            type: Dictionary

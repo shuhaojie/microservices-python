@@ -20,7 +20,8 @@ spec:  # 用来指定我们想要的配置
     spec:
       containers:
         - name: auth  # 容器名称
-          image: shuhaojie/auth  # 容器需要的镜像地址
+          image: shuhaojie/auth:latest  # 容器需要的镜像地址
+          imagePullPolicy: Never
           ports:
             - containerPort: 5000  # 要监听的端口
           envFrom:

@@ -1,9 +1,7 @@
 import os, gridfs, pika, json
+import requests
 from flask import Flask, request, send_file, render_template
 from flask_pymongo import PyMongo
-from auth import validate
-from auth_svc import access
-from storage import util
 from bson.objectid import ObjectId
 
 server = Flask(__name__)
@@ -20,25 +18,24 @@ connection = pika.BlockingConnection(pika.ConnectionParameters("rabbitmq"))
 channel = connection.channel()
 
 
-@server.route('/')
-def upload():
-    # 渲染上传页面
-    return render_template('index.html')
-
-
 @server.route("/login", methods=["POST"])
 def login():
-    token, err = access.login(request)
+    username = request.form.get('username', None)
+    password = request.form.get('password', None)
 
-    if not err:
-        return token
-    else:
-        return err
+    response = requests.post(
+        f"http://{os.environ.get('AUTH_SVC_ADDRESS')}/login",
+        data={
+            "username": username,
+            "password": password
+        }
+    )
+    return response.text
 
 
 @server.route("/upload", methods=["POST"])
 def upload():
-    access, err = validate.token(request)
+    access, err = validate_token(request)
 
     if err:
         return err
@@ -50,7 +47,7 @@ def upload():
             return "exactly 1 file required", 400
 
         for _, f in request.files.items():
-            err = util.upload(f, fs_videos, channel, access)
+            err = file_upload(f, fs_videos, channel, access)
 
             if err:
                 return err
@@ -60,9 +57,57 @@ def upload():
         return "not authorized", 401
 
 
+def file_upload(f, fs, channel, access):
+    try:
+        fid = fs.put(f)
+    except Exception as err:
+        print(err)
+        return "internal server error", 500
+
+    message = {
+        "video_fid": str(fid),
+        "mp3_fid": None,
+        "username": access["username"],
+    }
+
+    try:
+        channel.basic_publish(
+            exchange="",
+            routing_key="video",
+            body=json.dumps(message),
+            properties=pika.BasicProperties(
+                delivery_mode=pika.spec.PERSISTENT_DELIVERY_MODE
+            ),
+        )
+    except Exception as err:
+        print(err)
+        fs.delete(fid)
+        return "internal server error", 500
+
+
+def validate_token(request):
+    if not "Authorization" in request.headers:
+        return None, ("missing credentials", 401)
+
+    token = request.headers["Authorization"]
+
+    if not token:
+        return None, ("missing credentials", 401)
+
+    response = requests.post(
+        f"http://{os.environ.get('AUTH_SVC_ADDRESS')}/validate",
+        headers={"Authorization": token},
+    )
+
+    if response.status_code == 200:
+        return response.text, None
+    else:
+        return None, (response.text, response.status_code)
+
+
 @server.route("/download", methods=["GET"])
 def download():
-    access, err = validate.token(request)
+    access, err = validate_token(request)
 
     if err:
         return err

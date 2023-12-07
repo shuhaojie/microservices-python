@@ -20,7 +20,8 @@ spec:
     spec:
       containers:
         - name: gateway
-          image: shuhaojie/gateway
+          image: shuhaojie/gateway:latest
+          imagePullPolicy: Never
           envFrom:
             - configMapRef:
                 name: gateway-configmap
