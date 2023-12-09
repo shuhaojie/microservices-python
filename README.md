@@ -84,13 +84,7 @@ db.fs.files.find()
 
 该服务模块用来提供认证服务以及实现登录
 
-#### (1) 创建用户
-
-```bash
-mysql -u root -p < init.sql
-```
-
-#### (2) 构建镜像
+#### (1) 构建镜像
 
 ```bash
 docker build . 
@@ -107,7 +101,7 @@ docker push sweasytech/auth:latest
 docker tag sweasytech/auth:latest shuhaojie/auth:latest # 重命名
 ```
 
-#### (3) 服务创建
+#### (2) 服务创建
 
 这里使用default这个namespace，方便k9s中进行可视化. 
 > k8s系统的pod是kub-system, 不是default
@@ -127,9 +121,62 @@ kubectl create -f manifests/
 此时可以看到auth服务这个pod
 <div align=center><img alt="#" width="2852" height="592" src=图片/auth服务.png></div>
 
-### 2. API gateway
+#### (3) 日志查看
 
-这个模块是主服务，用户上传文件，然后转为mp3，这里用templates写了一个非常简易的前端页面。因此需要重新打镜像，这里打镜像注意亮点：
+Flask中的默认查看的日志级别是WARNING以上的，因此正常用info是无法查看的，可以设置一个日志级别。
+- 配置：
+```Python
+from logging.config import dictConfig
+
+dictConfig(
+    {
+        "version": 1,
+        "formatters": {
+            "default": {
+                "format": "[%(asctime)s] %(levelname)s in %(module)s: %(message)s",
+            }
+        },
+        "handlers": {
+            "console": {
+                "class": "logging.StreamHandler",
+                "stream": "ext://sys.stdout",
+                "formatter": "default",
+            }
+        },
+        "root": {"level": "DEBUG", "handlers": ["console"]},
+    }
+)
+```
+- 使用：
+```Python
+from flask import Flask
+app = Flask(__name__)
+app.logger.info("An info message")
+```
+参考<https://betterstack.com/community/guides/logging/how-to-start-logging-with-flask/#configuring-your-logging-system>
+
+### 2. MySQL
+
+auth模块中会和mysql进行交互，注意这里需要将MySQL容器中存数据的目录做一个挂载
+
+```yaml
+spec:
+  template:  # template模板来创建Pod资源
+    spec:
+      containers:
+          volumeMounts:
+            - mountPath: "/var/lib/mysql" # 将mysql的数据进行挂载
+              name: mysql-volume
+      volumes:
+        - name: mysql-volume
+          persistentVolumeClaim:
+            claimName: mysql-pvc
+```
+这样做的好处是，例如我们在容器中新建了一张表，存入了一个数据进去，下次这张表的这条数据还在。
+
+### 3. API gateway
+
+这个模块是主服务，用户上传文件，然后转为mp3，这里在作者的基础上有所改动。因此需要重新打镜像，这里打镜像注意亮点：
 
 1. 使用国内源，不然速度很慢
 
@@ -144,6 +191,7 @@ RUN pip install --no-cache-dir --requirement /app/requirements.txt -i https://py
 2. 打镜像的时候，可能会遇到一个问题，新打的镜像并没有我的代码，原因参考<https://stackoverflow.com/questions/56392041/getting-errimageneverpull-in-pods>
 - `eval $(minikube docker-env)`
 - 重新打镜像
+
 
 ## 三、消息队列
 

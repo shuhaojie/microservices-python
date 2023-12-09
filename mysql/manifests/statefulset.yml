@@ -1,9 +1,8 @@
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: mysql
 spec:
-  serviceName: "not-applicable"
   selector:
     matchLabels:
       app: mysql
@@ -26,11 +25,9 @@ spec:
             - secretRef:
                 name: mysql-secret
           volumeMounts:
-            - name: mysql-data
-              mountPath: "/init"
-              subPath: "init"
+            - mountPath: /var/lib/mysql # 容器内的路径
+              name: mysql-data
       volumes:
-        - name: mysql-data
-          hostPath:
-            path: /Users/haojie/workspaces/codes/microservices-python
-            type: Dictionary
+      - name: mysql-data
+        persistentVolumeClaim:
+          claimName: mysql-pvc
