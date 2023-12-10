@@ -4,3 +4,4 @@ metadata:
   name: gateway-configmap
 data:
   AUTH_SVC_ADDRESS: "auth:5000"
+  MONGO_USER: "root"
