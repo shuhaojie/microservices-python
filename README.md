@@ -27,56 +27,38 @@ mac直接下载dmg文件即可
 ### 2. kubectl
 k8s的命令行工具，参考<https://kubernetes.io/zh-cn/docs/tasks/tools/install-kubectl-macos/>
 
+macos apple芯片
+```bash
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/darwin/arm64/kubectl"
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/darwin/arm64/kubectl.sha256"
+echo "$(cat kubectl.sha256)  kubectl" | shasum -a 256 --check
+chmod +x ./kubectl
+sudo mv ./kubectl /usr/local/bin/kubectl
+sudo chown root: /usr/local/bin/kubectl
+kubectl version --client
+```
+
 ### 3. minikube
 
 本地化的kubernetes集群工具，用于学习和开发k8s，参考<https://minikube.sigs.k8s.io/docs/start/>
+
+```bash
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-darwin-arm64
+sudo install minikube-darwin-arm64 /usr/local/bin/minikube
+# 验证, 启动前要启动docker
+minikube start
+```
 
 ### 4. k9s
 
 提供k8s的终端UI去进行交互，参考<https://github.com/derailed/k9s>
 
+```bash
+brew install k9s
+```
+
 页面展示如下，其中输入0查看的是所有namespace的，输入1查看的是default的namespace
 <div align=center><img alt="#" width="1863" height="750" src=图片/k9s.png></div>
-
-### 5. python3.10
-
-参考<https://www.python.org/downloads/release/python-3100/>
-
-### 6. mysql
-
-参考<https://formulae.brew.sh/formula/mysql> <https://juejin.cn/post/7020737412955373598>
-
-```bash
-brew install mysql
-brew link mysql # 软链
-mysql --version # 查看是否安装成功
-sudo mysql.server start  # 启动MySQL服务
-mysqladmin -u root password # 配置root用户
-```
-
-### 7.mongodb
-
-参考<https://www.mongodb.com/docs/manual/tutorial/install-mongodb-on-os-x/>
-
-```bash
-brew tap mongodb/brew
-brew update
-brew install mongodb-community@6.0
-# 启动MongoDB
-mongod --config /usr/local/etc/mongod.conf --fork
-# 进入MongoDB的终端
-mongosh
-```
-
-查看MongoDB的数据
-
-```bash
-show databases;
-use mp3s;
-show collections;
-# 查看文件obj
-db.fs.files.find()
-```
 
 ## 三、服务模块
 
