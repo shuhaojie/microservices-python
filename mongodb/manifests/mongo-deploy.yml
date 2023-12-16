@@ -25,9 +25,12 @@ spec:
             - secretRef:
                 name: mongo-secret
           volumeMounts:
-            - mountPath: /data/db
-              name: mongo-data
+            - name: mongo-data
+              mountPath: /data/db
+              subPath: mongodb/data
+              readOnly: false
       volumes:
       - name: mongo-data
-        persistentVolumeClaim:
-          claimName: mongo-pvc
+        hostPath:
+          path: /root/microservices-python
+          type: Directory
