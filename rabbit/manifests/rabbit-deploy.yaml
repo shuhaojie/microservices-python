@@ -32,6 +32,14 @@ spec:
               mountPath: /var/lib/rabbitmq  # 这个路径是用来存储queue的
               subPath: rabbit/data # 子路径, 相对路径
               readOnly: false
+            - name: rabbitmq-volume
+              mountPath: /etc/rabbitmq/rabbitmq.conf  # 这个路径是用来存储queue的
+              subPath: rabbit/conf/rabbitmq.conf # 子路径, 相对路径
+              readOnly: True
+            - name: rabbitmq-volume
+              mountPath: /etc/rabbitmq/definitions.json  # 这个路径是用来存储queue的
+              subPath: rabbit/conf/definitions.json # 子路径, 相对路径
+              readOnly: True
       volumes:
         - name: rabbitmq-volume
           hostPath:
