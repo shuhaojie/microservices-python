@@ -7,6 +7,7 @@ RUN  apt-get clean
 RUN apt-get update \
   && apt-get install -y --no-install-recommends --no-install-suggests \
   build-essential \
+  && apt-get install vim curl telnet\
   && pip install --no-cache-dir --upgrade pip -i https://pypi.tuna.tsinghua.edu.cn/simple
 
 WORKDIR /app
