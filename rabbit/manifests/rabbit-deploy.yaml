@@ -28,9 +28,12 @@ spec:
             - secretRef:
                 name: rabbitmq-secret
           volumeMounts:
-            - mountPath: "/var/lib/rabbitmq"  # 这个路径是用来存储queue的
-              name: rabbitmq-volume
+            - name: rabbitmq-volume
+              mountPath: /var/lib/rabbitmq  # 这个路径是用来存储queue的
+              subPath: rabbit/data # 子路径, 相对路径
+              readOnly: false
       volumes:
         - name: rabbitmq-volume
-          persistentVolumeClaim:
-            claimName: rabbitmq-pvc
+          hostPath:
+            path: /root/microservices-python
+            type: Directory
