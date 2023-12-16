@@ -30,8 +30,13 @@ server = Flask(__name__)
 # 限制上传的文件为16MB
 server.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
-mongo_video = PyMongo(server, uri="mongodb://host.minikube.internal:27017/videos")
-mongo_mp3 = PyMongo(server, uri="mongodb://host.minikube.internal:27017/mp3s")
+mongo_user = os.environ.get('MONGO_USER')
+mongo_passwd = os.environ.get('MONGO_PASSWD')
+server.logger.info(mongo_user)
+server.logger.info(mongo_passwd)
+server.logger.info('==================================================')
+mongo_video = PyMongo(server, uri=f"mongodb://{mongo_user}:{mongo_passwd}@mongo:27017/videos")
+mongo_mp3 = PyMongo(server, uri=f"mongodb://{mongo_user}:{mongo_passwd}@mongo:27017/mp3s")
 fs_videos = gridfs.GridFS(mongo_video.db)
 fs_mp3s = gridfs.GridFS(mongo_mp3.db)
 
