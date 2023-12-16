@@ -25,9 +25,12 @@ spec:
             - secretRef:
                 name: mysql-secret
           volumeMounts:
-            - mountPath: /var/lib/mysql # 容器内的路径
-              name: mysql-data
+            - name: mysql-data
+              mountPath: /var/lib/mysql # 容器内的路径
+              subPath: /mysql/data # 容器内的路径
+              readOnly: false
       volumes:
       - name: mysql-data
-        persistentVolumeClaim:
-          claimName: mysql-pvc
+        hostPath:
+          path: /root/microservices-python
+          type: Directory
