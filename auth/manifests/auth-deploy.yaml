@@ -2,6 +2,7 @@ apiVersion: apps/v1  # 版本号, 需要根据安装的Kubernetes版本和资源
 kind: Deployment  # 想要创建的对象的类别。常见的有: Pod, ConfigMap, Service, Secret等
 metadata:  # 包含Deployment的一些meta信息
   name: auth  # Deployment的名称
+  namespace: mp3
   labels:
     app: auth  # 标签
 spec:  # 用来指定我们想要的配置
