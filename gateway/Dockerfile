@@ -7,10 +7,9 @@ FROM python:3.10-slim-bullseye
 #RUN sed -i 's/deb.debian.org/mirrors.163.com/g' /etc/apt/sources.list.bak
 #RUN sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.bak
 #RUN sed -i 's/deb.debian.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list.bak
-RUN sed -i "s@/deb.debian.org/@/mirrors.aliyun.com/@g" /etc/apt/sources.list
-RUN sed -i "s/security.debian.org/mirrors.aliyun.com\/debian-security/g" /etc/apt/sources.list
+RUN sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list &&  \
+    sed -i 's/security.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list
 RUN  apt-get clean
-
 RUN apt-get update
 RUN apt-get install -y --no-install-recommends --no-install-suggests build-essential
 RUN apt-get install -y --no-install-recommends --no-install-suggests vim curl telnet
