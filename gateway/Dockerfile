@@ -13,11 +13,10 @@ RUN mv /etc/apt/sources.list /etc/apt/sources.list.bak
 RUN mv /etc/apt/sources.list.bak /etc/apt/sources.list
 RUN  apt-get clean
 
-RUN apt-get update \
-  && apt-get install -y --no-install-recommends --no-install-suggests \
-  build-essential \
-  && apt-get install -y vim curl telnet\
-  && pip install --no-cache-dir --upgrade pip -i https://pypi.tuna.tsinghua.edu.cn/simple
+RUN apt-get update
+RUN apt-get install -y --no-install-recommends --no-install-suggests build-essential
+RUN apt-get install -y --no-install-recommends --no-install-suggests vim curl telnet
+RUN pip install --no-cache-dir --upgrade pip -i https://pypi.tuna.tsinghua.edu.cn/simple
 
 WORKDIR /app
 COPY ./requirements.txt /app
