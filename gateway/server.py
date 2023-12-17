@@ -40,8 +40,9 @@ mongo_mp3 = PyMongo(server, uri=f"mongodb://{mongo_user}:{mongo_passwd}@mongo:27
 fs_videos = gridfs.GridFS(mongo_video.db)
 fs_mp3s = gridfs.GridFS(mongo_mp3.db)
 
-# 使用的是rabbitmq的k8s服务 
-connection = pika.BlockingConnection(pika.ConnectionParameters("rabbitmq"))
+# 使用的是rabbitmq的k8s服务
+credentials = pika.PlainCredentials('guest', 'guest')
+connection = pika.BlockingConnection(pika.ConnectionParameters("rabbitmq", 5672, '/', credentials))
 channel = connection.channel()
 
 err_type_dict = {
