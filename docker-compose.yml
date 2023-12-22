@@ -1,0 +1,47 @@
+version: '3.8'
+services:
+  mysql:
+    image: mysql:latest
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+    environment:
+      MYSQL_USER: "auth_user"
+      MYSQL_DATABASE: "auth"
+      MYSQL_PASSWORD: "Auth123"
+      MYSQL_ROOT_PASSWORD: "root"
+  rabbitmq:
+    image: rabbitmq:3-management
+    volumes:
+      - ./rabbit/data:/var/lib/rabbitmq
+      - ./rabbit/conf/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+      - ./rabbit/conf/definitions.json:/etc/rabbitmq/definitions.json:ro
+    environment:
+      PLACEHOLDER: "NONE"
+    ports:
+      - "15672:15672"
+  mongodb:
+    image: mongo:latest
+    volumes:
+      - ./rabbit/data:/var/lib/rabbitmq
+      - ./rabbit/conf/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+      - ./rabbit/conf/definitions.json:/etc/rabbitmq/definitions.json:ro
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: "root"
+    ports:
+      - "15672:15672"
+  auth:
+    image: shuhaojie/auth:latest
+    environment:
+      MYSQL_HOST: "mysql"
+      MYSQL_USER: "auth_user"
+      MYSQL_DB: "auth"
+      MYSQL_PORT: "3306"
+      MYSQL_PASSWORD: "Auth123"
+      JWT_SECRET: "sarcasm"
+  gateway:
+    image: shuhaojie/gateway:latest
+    environment:
+      AUTH_SVC_ADDRESS: "auth:5000"
+      MONGO_USER: "root"
+      PLACEHOLDER: "nothing"
+      MONGO_PASSWD: "example"
