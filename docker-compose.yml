@@ -27,6 +27,7 @@ services:
       - ./rabbit/conf/definitions.json:/etc/rabbitmq/definitions.json:ro
     environment:
       MONGO_INITDB_ROOT_USERNAME: "root"
+      MONGO_INITDB_ROOT_PASSWORD: "example"
   auth:
     image: shuhaojie/auth:latest
     environment:
