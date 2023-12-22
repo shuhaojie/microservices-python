@@ -27,8 +27,6 @@ services:
       - ./rabbit/conf/definitions.json:/etc/rabbitmq/definitions.json:ro
     environment:
       MONGO_INITDB_ROOT_USERNAME: "root"
-    ports:
-      - "15672:15672"
   auth:
     image: shuhaojie/auth:latest
     environment:
