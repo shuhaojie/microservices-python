@@ -4,7 +4,6 @@ metadata:
   name: rabbitmq
   namespace: mp3
 spec:
-  type: ClusterIP
   selector:
     app: rabbitmq
   ports:
@@ -12,7 +11,6 @@ spec:
       protocol: TCP
       port: 15672
       targetPort: 15672
-      nodePort: 30672
     - name: amqp
       protocol: TCP
       port: 5672
