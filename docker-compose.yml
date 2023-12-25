@@ -12,9 +12,9 @@ services:
   rabbitmq:
     image: rabbitmq:3-management
     volumes:
-      - ./rabbit/data:/var/lib/rabbitmq
-      - ./rabbit/conf/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
-      - ./rabbit/conf/definitions.json:/etc/rabbitmq/definitions.json:ro
+      - ./rabbitmq/data:/var/lib/rabbitmq
+      - ./rabbitmq/conf/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+      - ./rabbitmq/conf/definitions.json:/etc/rabbitmq/definitions.json:ro
     environment:
       PLACEHOLDER: "NONE"
     ports:
@@ -22,9 +22,9 @@ services:
   mongodb:
     image: mongo:latest
     volumes:
-      - ./rabbit/data:/var/lib/rabbitmq
-      - ./rabbit/conf/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
-      - ./rabbit/conf/definitions.json:/etc/rabbitmq/definitions.json:ro
+      - ./rabbitmq/data:/var/lib/rabbitmq
+      - ./rabbitmq/conf/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+      - ./rabbitmq/conf/definitions.json:/etc/rabbitmq/definitions.json:ro
     environment:
       MONGO_INITDB_ROOT_USERNAME: "root"
       MONGO_INITDB_ROOT_PASSWORD: "example"
