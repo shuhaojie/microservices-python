@@ -1,4 +1,4 @@
-FROM python:3.10-slim-bullseye as build
+FROM python:3.10-slim-bullseye
 
 # 更新国内源
 RUN sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list &&  \
